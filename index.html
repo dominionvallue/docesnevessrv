@@ -1,1 +1,449 @@
-coloque isso agora nisso, e arrume barra pesquisa funcionar e o fale conosco faça funcionar no whatszapp tbm, eos produto deixe um pouco em vez de cer meio puxado dos lados deixe ficar meio quadradinho tipo em vez de ficar assim: | img | , coloque assim | img | <!DOCTYPE html> <html lang="pt-br"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Doces Neves - Desde 2003</title> <style> :root{ --azul:#1f3f5b; --azul2:#2d5675; --dourado:#c9a96e; --bg:#f5f6f8; } body{ margin:0; font-family:Arial; background:var(--bg); } /* HEADER */ header{ background:white; padding:12px 40px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 10px rgba(0,0,0,0.08); } .logo{ display:flex; align-items:center; gap:10px; } .logo img{ width:55px; } .logo h2{ margin:0; color:var(--azul); } .logo span{ font-size:13px; color:gray; } .search{ width:40%; } .search input{ width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; } /* HERO */ .hero{ background:var(--azul); color:white; padding:60px; } /* PRODUTOS */ .produtos{ padding:50px; } .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:25px; } /* CARD NOVO */ .card{ background:white; border-radius:14px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.08); } .card img{ width:100%; height:220px; object-fit:cover; background:#d8cbb6; } .content{ padding:18px; } .card h3{ margin:0; color:var(--azul); } .desc{ font-size:14px; color:#777; margin:6px 0 12px; } .price{ font-size:22px; color:var(--dourado); font-weight:bold; } .info{ display:flex; gap:10px; margin:10px 0; } .tag{ background:#eee; padding:8px; border-radius:8px; font-size:13px; flex:1; text-align:center; } /* QUANTIDADE */ .qtd{ display:flex; gap:10px; margin-top:10px; } .qtd button{ flex:1; padding:8px; border:none; background:#d8cbb6; cursor:pointer; border-radius:6px; } .qtd span{ flex:1; text-align:center; line-height:32px; } /* BOTÕES */ .btn{ width:100%; padding:10px; margin-top:8px; border:none; border-radius:8px; cursor:pointer; background:var(--azul); color:white; } .btn-outline{ background:white; color:var(--azul); border:2px solid var(--azul); } /* CARRINHO */ .carrinho{ position:fixed; right:20px; bottom:20px; background:var(--azul); color:white; padding:15px 20px; border-radius:12px; cursor:pointer; } .modal{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); display:none; justify-content:center; align-items:center; } .modal-box{ background:white; width:400px; border-radius:12px; padding:25px; position:relative; } .close{ position:absolute; right:15px; top:10px; font-size:22px; cursor:pointer; } .item{ display:flex; justify-content:space-between; margin-bottom:10px; } .remove{ color:red; cursor:pointer; margin-left:10px; } .total{ font-size:20px; margin-top:10px; color:var(--azul); } .whats{ background:#25d366; color:white; } </style> </head> <body> <header> <div class="logo"> <img src="logo.png"> <div> <h2>Doces Neves</h2> <span>Desde 2003</span> </div> </div> <div class="search"> <input type="text" placeholder="Pesquisar doces..."> </div> <button class="btn">Fale Conosco</button> </header> <section class="hero"> <h1>Doces Caseiros Mineiros</h1> <p>Desde 2003 preparando os melhores doces artesanais.</p> </section> <section class="produtos"> <h2>Produtos</h2> <div class="grid" id="produtos"></div> </section> <div class="carrinho" onclick="abrirCarrinho()"> 🛒 Carrinho (<span id="qtdCarrinho">0</span>) </div> <div class="modal" id="modal"> <div class="modal-box"> <span class="close" onclick="fecharCarrinho()">×</span> <h2>Seu Pedido</h2> <div id="lista"></div> <div class="total"> Total: R$ <span id="total">0</span> </div> <button class="btn whats" onclick="enviarWhats()"> Finalizar no WhatsApp </button> </div> </div> <script> const produtos = [ { nome:"Bolo de Milho", desc:"Bolo caseiro feito com milho verde", preco:35, peso:"500g", img:"https://images.unsplash.com/photo-1603532648955-039310d9ed75" }, { nome:"Doce de Leite", desc:"Doce mineiro tradicional", preco:20, peso:"400g", img:"https://images.unsplash.com/photo-1625944234220-fad3d0e6f2fa" }, { nome:"Cocada", desc:"Cocada cremosa artesanal", preco:18, peso:"300g", img:"https://images.unsplash.com/photo-1606312619070-d48b4c652a52" } ] let carrinho={} function render(){ let html="" produtos.forEach((p,i)=>{ html+= <div class="card"> <img src="${p.img}"> <div class="content"> <h3>${p.nome}</h3> <div class="desc">${p.desc}</div> <div class="price"> R$ ${p.preco} <span style="float:right;font-size:14px;color:#999">(${p.peso})</span> </div> <div class="info"> <div class="tag">📅 Sábado</div> <div class="tag">🚚 Domingo</div> </div> <div class="qtd"> <button onclick="menos(${i})">-</button> <span id="q${i}">0</span> <button onclick="mais(${i})">+</button> </div> <button class="btn btn-outline">Ver Produto</button> <button class="btn" onclick="mais(${i})">Adicionar ao Carrinho</button> </div> </div> }) document.getElementById("produtos").innerHTML=html } function mais(i){ if(!carrinho[i]) carrinho[i]=0 carrinho[i]++ document.getElementById("q"+i).innerText=carrinho[i] update() } function menos(i){ if(carrinho[i]){ carrinho[i]-- document.getElementById("q"+i).innerText=carrinho[i] } update() } function update(){ let qtd=Object.values(carrinho).reduce((a,b)=>a+b,0) document.getElementById("qtdCarrinho").innerText=qtd } function abrirCarrinho(){ let lista="" let total=0 for(let i in carrinho){ if(carrinho[i]>0){ let p=produtos[i] let sub=p.preco*carrinho[i] total+=sub lista+= <div class="item"> ${p.nome} x${carrinho[i]} <div> R$ ${sub} <span class="remove" onclick="remover(${i})">X</span> </div> </div> } } document.getElementById("lista").innerHTML=lista document.getElementById("total").innerText=total document.getElementById("modal").style.display="flex" } function fecharCarrinho(){ document.getElementById("modal").style.display="none" } function remover(i){ delete carrinho[i] abrirCarrinho() update() } function enviarWhats(){ let texto="Pedido Doces Neves%0A" let total=0 for(let i in carrinho){ if(carrinho[i]){ let p=produtos[i] texto+=${p.nome} x${carrinho[i]}%0A total+=p.preco*carrinho[i] } } texto+=Total R$ ${total} window.open("https://wa.me/5516999999999?text="+texto) } render() </script> </body> </html>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doces Neves - Desde 2003</title>
+
+<style>
+
+:root{
+--azul:#1f3f5b;
+--azul2:#2d5675;
+--dourado:#c9a96e;
+--bg:#f5f6f8;
+}
+
+body{
+margin:0;
+font-family:Arial;
+background:var(--bg);
+}
+
+/* HEADER */
+header{
+background:white;
+padding:12px 40px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:55px;
+}
+
+.logo h2{
+margin:0;
+color:var(--azul);
+}
+
+.logo span{
+font-size:13px;
+color:gray;
+}
+
+.search{
+width:40%;
+}
+
+.search input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* HERO */
+.hero{
+background:var(--azul);
+color:white;
+padding:60px;
+}
+
+/* PRODUTOS */
+.produtos{
+padding:50px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:25px;
+}
+
+/* CARD NOVO */
+
+.card{
+background:white;
+border-radius:14px;
+overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+.card img{
+width:100%;
+height:220px;
+object-fit:cover;
+background:#d8cbb6;
+}
+
+.content{
+padding:18px;
+}
+
+.card h3{
+margin:0;
+color:var(--azul);
+}
+
+.desc{
+font-size:14px;
+color:#777;
+margin:6px 0 12px;
+}
+
+.price{
+font-size:22px;
+color:var(--dourado);
+font-weight:bold;
+}
+
+.info{
+display:flex;
+gap:10px;
+margin:10px 0;
+}
+
+.tag{
+background:#eee;
+padding:8px;
+border-radius:8px;
+font-size:13px;
+flex:1;
+text-align:center;
+}
+
+/* QUANTIDADE */
+.qtd{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.qtd button{
+flex:1;
+padding:8px;
+border:none;
+background:#d8cbb6;
+cursor:pointer;
+border-radius:6px;
+}
+
+.qtd span{
+flex:1;
+text-align:center;
+line-height:32px;
+}
+
+/* BOTÕES */
+.btn{
+width:100%;
+padding:10px;
+margin-top:8px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:var(--azul);
+color:white;
+}
+
+.btn-outline{
+background:white;
+color:var(--azul);
+border:2px solid var(--azul);
+}
+
+/* CARRINHO */
+.carrinho{
+position:fixed;
+right:20px;
+bottom:20px;
+background:var(--azul);
+color:white;
+padding:15px 20px;
+border-radius:12px;
+cursor:pointer;
+}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.4);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.modal-box{
+background:white;
+width:400px;
+border-radius:12px;
+padding:25px;
+position:relative;
+}
+
+.close{
+position:absolute;
+right:15px;
+top:10px;
+font-size:22px;
+cursor:pointer;
+}
+
+.item{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+.remove{
+color:red;
+cursor:pointer;
+margin-left:10px;
+}
+
+.total{
+font-size:20px;
+margin-top:10px;
+color:var(--azul);
+}
+
+.whats{
+background:#25d366;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+<img src="logo.png">
+<div>
+<h2>Doces Neves</h2>
+<span>Desde 2003</span>
+</div>
+</div>
+
+<div class="search">
+<input type="text" placeholder="Pesquisar doces...">
+</div>
+
+<button class="btn">Fale Conosco</button>
+</header>
+
+<section class="hero">
+<h1>Doces Caseiros Mineiros</h1>
+<p>Desde 2003 preparando os melhores doces artesanais.</p>
+</section>
+
+<section class="produtos">
+<h2>Produtos</h2>
+<div class="grid" id="produtos"></div>
+</section>
+
+<div class="carrinho" onclick="abrirCarrinho()">
+🛒 Carrinho (<span id="qtdCarrinho">0</span>)
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-box">
+
+<span class="close" onclick="fecharCarrinho()">×</span>
+
+<h2>Seu Pedido</h2>
+
+<div id="lista"></div>
+
+<div class="total">
+Total: R$ <span id="total">0</span>
+</div>
+
+<button class="btn whats" onclick="enviarWhats()">
+Finalizar no WhatsApp
+</button>
+
+</div>
+</div>
+
+<script>
+
+const produtos = [
+{
+nome:"Bolo de Milho",
+desc:"Bolo caseiro feito com milho verde",
+preco:35,
+peso:"500g",
+img:"https://images.unsplash.com/photo-1603532648955-039310d9ed75"
+},
+{
+nome:"Doce de Leite",
+desc:"Doce mineiro tradicional",
+preco:20,
+peso:"400g",
+img:"https://images.unsplash.com/photo-1625944234220-fad3d0e6f2fa"
+},
+{
+nome:"Cocada",
+desc:"Cocada cremosa artesanal",
+preco:18,
+peso:"300g",
+img:"https://images.unsplash.com/photo-1606312619070-d48b4c652a52"
+}
+]
+
+let carrinho={}
+
+function render(){
+
+let html=""
+
+produtos.forEach((p,i)=>{
+
+html+=`
+<div class="card">
+
+<img src="${p.img}">
+
+<div class="content">
+
+<h3>${p.nome}</h3>
+<div class="desc">${p.desc}</div>
+
+<div class="price">
+R$ ${p.preco}
+<span style="float:right;font-size:14px;color:#999">(${p.peso})</span>
+</div>
+
+<div class="info">
+<div class="tag">📅 Sábado</div>
+<div class="tag">🚚 Domingo</div>
+</div>
+
+<div class="qtd">
+<button onclick="menos(${i})">-</button>
+<span id="q${i}">0</span>
+<button onclick="mais(${i})">+</button>
+</div>
+
+<button class="btn btn-outline">Ver Produto</button>
+<button class="btn" onclick="mais(${i})">Adicionar ao Carrinho</button>
+
+</div>
+</div>
+`
+})
+
+document.getElementById("produtos").innerHTML=html
+
+}
+
+function mais(i){
+if(!carrinho[i]) carrinho[i]=0
+carrinho[i]++
+document.getElementById("q"+i).innerText=carrinho[i]
+update()
+}
+
+function menos(i){
+if(carrinho[i]){
+carrinho[i]--
+document.getElementById("q"+i).innerText=carrinho[i]
+}
+update()
+}
+
+function update(){
+let qtd=Object.values(carrinho).reduce((a,b)=>a+b,0)
+document.getElementById("qtdCarrinho").innerText=qtd
+}
+
+function abrirCarrinho(){
+
+let lista=""
+let total=0
+
+for(let i in carrinho){
+
+if(carrinho[i]>0){
+
+let p=produtos[i]
+let sub=p.preco*carrinho[i]
+total+=sub
+
+lista+=`
+<div class="item">
+${p.nome} x${carrinho[i]}
+<div>
+R$ ${sub}
+<span class="remove" onclick="remover(${i})">X</span>
+</div>
+</div>
+`
+}
+}
+
+document.getElementById("lista").innerHTML=lista
+document.getElementById("total").innerText=total
+
+document.getElementById("modal").style.display="flex"
+}
+
+function fecharCarrinho(){
+document.getElementById("modal").style.display="none"
+}
+
+function remover(i){
+delete carrinho[i]
+abrirCarrinho()
+update()
+}
+
+function enviarWhats(){
+
+let texto="Pedido Doces Neves%0A"
+let total=0
+
+for(let i in carrinho){
+if(carrinho[i]){
+let p=produtos[i]
+texto+=`${p.nome} x${carrinho[i]}%0A`
+total+=p.preco*carrinho[i]
+}
+}
+
+texto+=`Total R$ ${total}`
+
+window.open("https://wa.me/5516999999999?text="+texto)
+
+}
+
+render()
+
+</script>
+
+</body>
+</html>
