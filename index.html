@@ -6,7 +6,6 @@
 <title>Doces Neves - Desde 2003</title>
 
 <style>
-
 :root{
 --azul:#1f3f5b;
 --azul2:#2d5675;
@@ -65,7 +64,24 @@ border:1px solid #ccc;
 .hero{
 background:var(--azul);
 color:white;
-padding:60px;
+padding:80px;
+position:relative;
+overflow:hidden;
+}
+
+/* LOGO TRANSPARENTE */
+.hero::after{
+content:"";
+position:absolute;
+right:40px;
+top:50%;
+transform:translateY(-50%);
+width:300px;
+height:300px;
+background:url("logo.png") no-repeat center;
+background-size:contain;
+opacity:0.20;
+pointer-events:none;
 }
 
 /* PRODUTOS */
@@ -75,12 +91,12 @@ padding:50px;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(260px,300px));
+justify-content:center;
 gap:25px;
 }
 
-/* CARD NOVO */
-
+/* CARD */
 .card{
 background:white;
 border-radius:14px;
@@ -90,9 +106,8 @@ box-shadow:0 5px 15px rgba(0,0,0,0.08);
 
 .card img{
 width:100%;
-height:220px;
+height:240px;
 object-fit:cover;
-background:#d8cbb6;
 }
 
 .content{
@@ -165,12 +180,6 @@ background:var(--azul);
 color:white;
 }
 
-.btn-outline{
-background:white;
-color:var(--azul);
-border:2px solid var(--azul);
-}
-
 /* CARRINHO */
 .carrinho{
 position:fixed;
@@ -233,13 +242,13 @@ color:var(--azul);
 background:#25d366;
 color:white;
 }
-
 </style>
 </head>
 
 <body>
 
 <header>
+
 <div class="logo">
 <img src="logo.png">
 <div>
@@ -249,14 +258,15 @@ color:white;
 </div>
 
 <div class="search">
-<input type="text" placeholder="Pesquisar doces...">
+<input id="pesquisa" type="text" placeholder="Pesquisar doces..." onkeyup="filtrar()">
 </div>
+<button class="btn" onclick="fale()">Fale Conosco</button>
 
-<button class="btn">Fale Conosco</button>
 </header>
 
 <section class="hero">
 <h1>Doces Caseiros Mineiros</h1>
+<h1>Ivo Neves e Bete Neves</h1>
 <p>Desde 2003 preparando os melhores doces artesanais.</p>
 </section>
 
@@ -271,72 +281,38 @@ color:white;
 
 <div class="modal" id="modal">
 <div class="modal-box">
-
 <span class="close" onclick="fecharCarrinho()">×</span>
-
 <h2>Seu Pedido</h2>
-
 <div id="lista"></div>
-
-<div class="total">
-Total: R$ <span id="total">0</span>
-</div>
-
-<button class="btn whats" onclick="enviarWhats()">
-Finalizar no WhatsApp
-</button>
-
+<div class="total">Total: R$ <span id="total">0</span></div>
+<button class="btn whats" onclick="enviarWhats()">Finalizar no WhatsApp</button>
 </div>
 </div>
 
 <script>
 
-const produtos = [
-{
-nome:"Bolo de Milho",
-desc:"Bolo caseiro feito com milho verde",
-preco:35,
-peso:"500g",
-img:"https://images.unsplash.com/photo-1603532648955-039310d9ed75"
-},
-{
-nome:"Doce de Leite",
-desc:"Doce mineiro tradicional",
-preco:20,
-peso:"400g",
-img:"https://images.unsplash.com/photo-1625944234220-fad3d0e6f2fa"
-},
-{
-nome:"Cocada",
-desc:"Cocada cremosa artesanal",
-preco:18,
-peso:"300g",
-img:"https://images.unsplash.com/photo-1606312619070-d48b4c652a52"
-}
+const numeroWhats="5516993968680"
+
+const produtos=[
+{nome:"Nome",desc:"nome exemplo",preco:2,img:"http"},
+{nome:"Nome 2",desc:"exemplo: Tradicional mineiro",preco:3,img:"http"},
+{nome:"Nome 3",desc:"nome",preco:6,img:"hhtt"}
 ]
 
 let carrinho={}
+let listaFiltrada=[...produtos]
 
-function render(){
-
+function render(lista=produtos){
 let html=""
 
-produtos.forEach((p,i)=>{
-
+lista.forEach((p,i)=>{
 html+=`
 <div class="card">
-
 <img src="${p.img}">
-
 <div class="content">
-
 <h3>${p.nome}</h3>
 <div class="desc">${p.desc}</div>
-
-<div class="price">
-R$ ${p.preco}
-<span style="float:right;font-size:14px;color:#999">(${p.peso})</span>
-</div>
+<div class="price">R$ ${p.preco}</div>
 
 <div class="info">
 <div class="tag">📅 Sábado</div>
@@ -345,12 +321,11 @@ R$ ${p.preco}
 
 <div class="qtd">
 <button onclick="menos(${i})">-</button>
-<span id="q${i}">0</span>
+<span id="q${i}">${carrinho[i] || 0}</span>
 <button onclick="mais(${i})">+</button>
 </div>
 
-<button class="btn btn-outline">Ver Produto</button>
-<button class="btn" onclick="mais(${i})">Adicionar ao Carrinho</button>
+<button class="btn" onclick="mais(${i})">Encomendar Agora</button>
 
 </div>
 </div>
@@ -358,22 +333,28 @@ R$ ${p.preco}
 })
 
 document.getElementById("produtos").innerHTML=html
+}
 
+function filtrar(){
+let v=document.getElementById("pesquisa").value.toLowerCase()
+listaFiltrada=produtos.filter(p=>p.nome.toLowerCase().includes(v))
+render(listaFiltrada)
 }
 
 function mais(i){
 if(!carrinho[i]) carrinho[i]=0
 carrinho[i]++
-document.getElementById("q"+i).innerText=carrinho[i]
 update()
+render(listaFiltrada)
 }
 
 function menos(i){
 if(carrinho[i]){
 carrinho[i]--
-document.getElementById("q"+i).innerText=carrinho[i]
+if(carrinho[i] <= 0) delete carrinho[i]
 }
 update()
+render(listaFiltrada)
 }
 
 function update(){
@@ -382,14 +363,10 @@ document.getElementById("qtdCarrinho").innerText=qtd
 }
 
 function abrirCarrinho(){
-
 let lista=""
 let total=0
 
 for(let i in carrinho){
-
-if(carrinho[i]>0){
-
 let p=produtos[i]
 let sub=p.preco*carrinho[i]
 total+=sub
@@ -404,11 +381,9 @@ R$ ${sub}
 </div>
 `
 }
-}
 
 document.getElementById("lista").innerHTML=lista
 document.getElementById("total").innerText=total
-
 document.getElementById("modal").style.display="flex"
 }
 
@@ -418,27 +393,27 @@ document.getElementById("modal").style.display="none"
 
 function remover(i){
 delete carrinho[i]
-abrirCarrinho()
 update()
+abrirCarrinho()
+render(listaFiltrada)
 }
 
 function enviarWhats(){
-
 let texto="Pedido Doces Neves%0A"
 let total=0
 
 for(let i in carrinho){
-if(carrinho[i]){
 let p=produtos[i]
 texto+=`${p.nome} x${carrinho[i]}%0A`
 total+=p.preco*carrinho[i]
 }
-}
 
 texto+=`Total R$ ${total}`
+window.open(`https://wa.me/${numeroWhats}?text=${texto}`)
+}
 
-window.open("https://wa.me/5516999999999?text="+texto)
-
+function fale(){
+window.open(`https://wa.me/${numeroWhats}`)
 }
 
 render()
