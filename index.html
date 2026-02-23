@@ -32,11 +32,11 @@ box-shadow:0 2px 10px rgba(0,0,0,0.08);
 .logo{
 display:flex;
 align-items:center;
-gap:10px;
+gap:25px;
 }
 
 .logo img{
-width:55px;
+width:250px;
 }
 
 .logo h2{
@@ -127,7 +127,7 @@ margin:6px 0 12px;
 
 .price{
 font-size:22px;
-color:var(--dourado);
+color:black;
 font-weight:bold;
 }
 
@@ -265,6 +265,11 @@ color:white;
 </header>
 
 <section class="hero">
+<video autoplay muted loop>
+<source src="mostra2.mp4" type="video/mp4">
+</video>
+
+<h1>Conheça um pouco nossos doces</h1>
 <h1>Doces Caseiros Mineiros</h1>
 <h1>Ivo Neves e Bete Neves</h1>
 <p>Desde 2003 preparando os melhores doces artesanais.</p>
@@ -294,9 +299,9 @@ color:white;
 const numeroWhats="5516993968680"
 
 const produtos=[
-{nome:"Nome",desc:"nome exemplo",preco:2,img:"http"},
-{nome:"Nome 2",desc:"exemplo: Tradicional mineiro",preco:3,img:"http"},
-{nome:"Nome 3",desc:"nome",preco:6,img:"hhtt"}
+{nome:"Doce de Amendoim",desc:"Pote de 1KG / Receita Mineira",preco:40,img:"doce amendo.jpeg"},
+{nome:"Doce de Leite",desc:"Pote de 1KG / Receita Mineira",preco:40,img:"de leite.jpeg"},
+{nome:"Doce de Amendoim + Doce de Leite",desc:"Pote de 1KG , Metade de amendoim e metade de leite, Receita Mineira",preco:40,img:"am2.jpeg"},
 ]
 
 let carrinho={}
@@ -315,8 +320,8 @@ html+=`
 <div class="price">R$ ${p.preco}</div>
 
 <div class="info">
-<div class="tag">📅 Sábado</div>
-<div class="tag">🚚 Domingo</div>
+<div class="tag">📅 Encomendas no Sábado</div>
+<div class="tag">🚚 Entregas no Domingo</div>
 </div>
 
 <div class="qtd">
